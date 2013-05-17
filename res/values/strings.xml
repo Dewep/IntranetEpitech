@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="home">Accueil</string>
+    <string name="app_name">Intranet Epitech</string>
+    <string name="action_settings">Settings</string>
+    <string name="epitech">{ EPITECH }</string>
+    <string name="icone">Icône</string>
+    <string name="rafraichir">Rafraîchir</string>
+    <string name="token">Token</string>
+    <string name="preferences">Préférences</string>
+    <string name="login">login</string>
+    <string name="mot_de_passe_unix">Mot de passe UNIX</string>
+    <string name="password">password</string>
+    <string name="enregistrer">Enregistrer</string>
+    <string name="voir_notes">Voir notes</string>
+    <string name="voir_inscrits">Voir les inscrits</string>
+    <string name="voir_fichiers">Voir les fichiers</string>
+    <string name="liste_inscrits">Liste des inscrits</string>
+    <string name="version">Version</string>
+    <string name="version_content">ID Version : 1.3\nDate mise à jour : 17 mai 2013</string>
+    <string name="opensource">Application OpenSource</string>
+    <string name="opensource_content">Ce projet est OpenSource. Vous trouverez les sources de l\'application sur Github :</string>
+    <string name="github">https://github.com/Dewep/IntranetEpitech</string>
+    <string name="auteur">Auteur</string>
+    <string name="auteur_content">Maigret Aurélien (maigre_a)\nEtudiant EPITECH Nancy 2017</string>
+    <string name="contact">Contact</string>
+    <string name="contact_content">Pour faire une suggestion ou un rapport de bug, vous pouvez me contacter à :</string>
+    <string name="email">aurelien.maigret@epitech.eu</string>
+    <string name="m_messages">Messages</string>
+    <string name="m_journee">Ma journée</string>
+    <string name="m_semaine">Ma semaine</string>
+    <string name="m_notes">Mes notes</string>
+    <string name="m_projets">Mes projets</string>
+    <string name="m_preferences">Préférences</string>
+    <string name="m_apropos">A propos</string>
+    <string name="login_trop_court">Login trop court.</string>
+    <string name="mdp_trop_court">Mot de passe trop court.</string>
+    <string name="identifiants_save">Identifiants enregistrés.</string>
+    <string name="aucune_donnee">Aucune donnée</string>
+    <string name="chargement_en_cours">Chargement en cours</string>
+    <string name="erreur_auth">Erreur d\'authentification.</string>
+    <string name="impossible_acceder_intra">Impossible d\'accéder à l\'intra.</string>
+    <string name="http_code_erreur">HTTP Code erreur</string>
+    <string name="erreur_parsing">Erreur parsing des données.</string>
+    <string name="erreur">Erreur</string>
+    <string name="tokens_a_valider">Tokens à valider</string>
+    <string name="prochaine_activite">Prochaines activités</string>
+    <string name="mes_messages">Mes messages</string>
+    <string name="login_epitech">Login Epitech</string>
+    <string name="go">Go</string>
+
+</resources>
