@@ -12,8 +12,11 @@ Application Android pour accéder à l'Intranet Epitech :
 - Gérer les inscriptions planning
 - Gérer les inscriptions susies
 - Voir ses projets
+- Voir ses notes
+- Voir les notes d'un étudiant
+- Voir les notes d'un projet
 
-Code disponible d'ici quelques jours.
+L'application est disponible gratuitement sur Google Play : https://play.google.com/store/apps/details?id=net.dewep.intranetepitech
 
 
 A propos
