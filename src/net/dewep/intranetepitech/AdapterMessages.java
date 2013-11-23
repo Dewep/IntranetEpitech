@@ -42,7 +42,7 @@ public class AdapterMessages extends BaseAdapter
 		{
 			convertView = inflater.inflate(R.layout.item_messages_message, null);
 
-			Message msg = (Message) getItem(position);
+			Notice msg = (Notice) getItem(position);
 			if (msg != null) {
 				TextView titre = (TextView) convertView.findViewById(R.id.titre);
 				TextView description = (TextView) convertView.findViewById(R.id.description);

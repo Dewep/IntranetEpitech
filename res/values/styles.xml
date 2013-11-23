@@ -18,5 +18,6 @@
     </style>
     <color name="main">#0080FF</color>
     <color name="yellow">#FFFFAA</color>
+    <color name="gris_clair">#DDDDDD</color>
 
 </resources>

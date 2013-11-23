@@ -33,7 +33,7 @@ public class Act_Messages extends Activity {
 
 		RecupDonneesNet mnm = new RecupDonneesNet(this, true);
 		MyRequest req = new MyRequest();
-		req.url = "https://intra.epitech.eu/user/notification/message?format=json&lang=fr";
+		req.url = "/user/notification/message?format=json&lang=fr";
 		req.type = Global.T_MESSAGES;
 		mnm.execute(req);
 	}
@@ -52,10 +52,12 @@ public class Act_Messages extends Activity {
 		case android.R.id.home:
 		case R.id.menu_home:
 			Intent parentActivityIntent = new Intent(this, Act_Main.class);
+			parentActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(parentActivityIntent);
+			finish();
 			return true;
 		case R.id.menu_refresh:
-			Stock.getInstance().messages = new ArrayList<Message>();
+			Stock.getInstance().messages = new ArrayList<Notice>();
 			this.launch();
 			return true;
 		}

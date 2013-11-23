@@ -22,6 +22,10 @@ import org.json.JSONObject;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
 import android.text.Html;
 import android.widget.Toast;
@@ -37,6 +41,7 @@ class MyRequest {
 	String explain_error;
 	String response;
 	Object obj;
+	boolean susie = false;
 }
 
 public class RecupDonneesNet extends AsyncTask<MyRequest, Integer, MyRequest> {
@@ -49,58 +54,154 @@ public class RecupDonneesNet extends AsyncTask<MyRequest, Integer, MyRequest> {
 		if (dialog)
 		{
 			progressDialog = new ProgressDialog(context);
-			progressDialog.setMessage(context.getString(R.string.chargement_en_cours));
+			if (context.getClass().getSimpleName().equals("Act_Settings"))
+				progressDialog.setMessage(context.getString(R.string.connexion_en_cours));
+			else
+				progressDialog.setMessage(context.getString(R.string.chargement_en_cours));
 			progressDialog.setCanceledOnTouchOutside(false);
 			progressDialog.show();
 		}
 	}
 
+	protected HttpResponse post(String url, List<NameValuePair> nameValuePairs, boolean withLogas)
+	{
+		try {
+			String short_domaine = "intra.epitech.eu";
+			String domaine = "https://" + short_domaine;
+	
+			HttpPost httppost = new HttpPost(domaine + (withLogas ? Act_Settings.getLogas(this.context) : "") + url);
+			//Log.d("LINK", domaine + (withLogas ? Act_Settings.getLogas(this.context) : "") + url);
+	
+			//httppost.setHeader("Authorization", "Basic " + Base64.encodeToString("aurelien.maigret:xxxxxxxx".getBytes(), Base64.NO_WRAP));
+			PackageManager pm = this.context.getPackageManager();
+	      	PackageInfo pi;
+	        pi = pm.getPackageInfo(this.context.getPackageName(), 0);
+			httppost.addHeader("Referer", domaine + "/IntranetEpitech-" + String.valueOf(pi.versionCode) + "/" + pi.versionName);
+			httppost.addHeader("api-key", "Dewep.net");
+	
+			BasicClientCookie cookie = new BasicClientCookie("language", "fr");
+			cookie.setPath("/");
+			cookie.setDomain(short_domaine);
+			((DefaultHttpClient) Stock.getInstance().httpclient).getCookieStore().addCookie(cookie);
+	
+			if (nameValuePairs != null) {
+				//Log.d("PARAM REQ", "PARAMS ENTITY ADD");
+				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+			}
+
+			//Log.d("REQ EXECUTE", "wef");
+			return Stock.getInstance().httpclient.execute(httppost);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	@Override
 	protected MyRequest doInBackground(MyRequest... params) {
+		MyRequest request = (MyRequest) params[0];
 		try {
+			HttpResponse resp = null;
 			if (Stock.getInstance().httpclient == null)
 			{
+				//Log.d("INIT CONNEXION", "");
 				Stock.getInstance().httpclient = new DefaultHttpClient();
-				HttpPost httppost = new HttpPost("https://intra.epitech.eu");
 				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 				nameValuePairs.add(new BasicNameValuePair("login", Act_Settings.getLogin(this.context)));
 				nameValuePairs.add(new BasicNameValuePair("password", Act_Settings.getPassword(this.context)));
-				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-				HttpResponse resp = Stock.getInstance().httpclient.execute(httppost);
-				params[0].codeRetour = resp.getStatusLine().getStatusCode();
-				if (params[0].codeRetour != 200)
-					return (params[0]);
+				if ((resp = this.post("/user/?format=json", nameValuePairs, false)) == null)
+					throw new IOException("this.post is null");
+				BufferedReader reader = new BufferedReader(new InputStreamReader(resp.getEntity().getContent(), "UTF-8"));
+				StringBuilder builder = new StringBuilder();
+				for (String line = null; (line = reader.readLine()) != null;)
+					builder.append(line).append("\n");
+				request.response = builder.toString();
+				//Log.d("REQ END", request.response);
+				JSONObject objs = new JSONObject(request.response);
+				Act_Settings.setCanLogas(this.context, false);
+				if (objs.has("rights"))
+				{
+					JSONObject rights = objs.getJSONObject("rights");
+					Act_Settings.setCanLogas(this.context, rights.has("logas"));
+				}
+				request.codeRetour = resp.getStatusLine().getStatusCode();
+				//Log.d("testt", request.response);
+				if (request.codeRetour != 200)
+					return (request);
 			}
-			if (params[0].type == Global.T_LOGIN)
-				return (null);
+			if (request.type == Global.T_LOGIN)
+			{
+				request.codeRetour = 0;
+				return (request);
+			}
 
-			HttpPost httppost2 = new HttpPost(params[0].url);
-			BasicClientCookie cookie = new BasicClientCookie("language", "fr");
-			cookie.setPath("/");
-			cookie.setDomain("intra.epitech.eu");
-			((DefaultHttpClient) Stock.getInstance().httpclient).getCookieStore().addCookie(cookie);
-			if (params[0].nameValuePairs != null)
-				httppost2.setEntity(new UrlEncodedFormEntity(params[0].nameValuePairs));
-			HttpResponse resp2 = Stock.getInstance().httpclient.execute(httppost2);
-			params[0].codeRetour = resp2.getStatusLine().getStatusCode();
+			if (request.susie)
+			{
+				if (Stock.getInstance().id_susie == 0)
+				{
+					if ((resp = this.post("/planning/my-schedules?format=json", null, true)) == null)
+						throw new IOException("this.post is null");
+					BufferedReader reader = new BufferedReader(new InputStreamReader(resp.getEntity().getContent(), "UTF-8"));
+					StringBuilder builder = new StringBuilder();
+					for (String line = null; (line = reader.readLine()) != null;)
+						builder.append(line).append("\n");
+					request.response = builder.toString();
+					//Log.d("REQ END", request.response);
+					try {
+						if (request.response.indexOf("[") == -1)
+							request.response = "[" + request.response + "]";
+						//Log.d("resp susie", request.response);
+						JSONArray array = new JSONArray(request.response);
+						for (int i = 0; i < array.length(); i++) {
+							JSONObject o = array.getJSONObject(i);
+							if (!o.isNull("id") && !o.isNull("type") && o.getString("type").equals("susie"))
+								Stock.getInstance().id_susie = o.getInt("id");
+						}
+					} catch (JSONException e) {
+						e.printStackTrace();
+						request.codeRetour = -2;
+						request.response = context.getString(R.string.erreur_parsing);
+						return (request);
+					}
+					request.codeRetour = resp.getStatusLine().getStatusCode();
+					//Log.d("testt", request.response);
+					if (request.codeRetour != 200)
+						return (request);
+				}
+				if (Stock.getInstance().id_susie == 0)
+				{
+					request.codeRetour = -2;
+					request.response = "Vous n'êtes inscrit à aucune susie actuellement.";
+					return (request);
+				}
+				request.url = "/planning/" + Integer.toString(Stock.getInstance().id_susie) + "/" + request.url;
+			}
 
-			BufferedReader reader = new BufferedReader(new InputStreamReader(resp2.getEntity().getContent(), "UTF-8"));
+			if ((resp = this.post(request.url, request.nameValuePairs, true)) == null)
+				throw new IOException("this.post is null");
+			request.codeRetour = resp.getStatusLine().getStatusCode();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(resp.getEntity().getContent(), "UTF-8"));
 			StringBuilder builder = new StringBuilder();
-			for (String line = null; (line = reader.readLine()) != null;) {
+			for (String line = null; (line = reader.readLine()) != null;)
 				builder.append(line).append("\n");
-			}
-			params[0].response = builder.toString();
-			if (params[0].codeRetour != 200)
-				return (params[0]);
-			if (params[0].response.indexOf("[") == -1)
-				params[0].response = "[" + params[0].response + "]";
+			request.response = builder.toString();
+			//Log.d("test", request.response);
+			if (request.codeRetour != 200)
+				return (request);
+			if (request.response.indexOf("[") == -1)
+				request.response = "[" + request.response + "]";
 		} catch (IOException e) {
 			e.printStackTrace();
-			params[0].codeRetour = -1;
-			params[0].explain_error = e.getMessage();
+			request.codeRetour = -1;
+			request.explain_error = e.getMessage();
+		} catch (JSONException e) {
+			e.printStackTrace();
+			request.codeRetour = -1;
+			request.explain_error = e.getMessage();
 		}
-
-		return (params[0]);
+		return (request);
 	}
 
 	protected void openError(String title, String message)
@@ -117,9 +218,23 @@ public class RecupDonneesNet extends AsyncTask<MyRequest, Integer, MyRequest> {
 
 	@Override
 	protected void onPostExecute(MyRequest result) {
-		if (result == null)
+		if (result == null || result.codeRetour == 0)
+		{
+			try {
+				if (progressDialog != null && progressDialog.isShowing())
+					progressDialog.cancel();
+			} catch (Exception e) {
+				// nothing
+			}
+			Intent intent = new Intent(this.context, Act_Main.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			this.context.startActivity(intent);
+			((Activity) this.context).finish();
 			return ;
-		if (result.codeRetour == 403 && result.type != Global.T_INSCRIPTION_INSCRIPTIONS && result.type != Global.T_INSCRIPTION_SUSIE)
+		}
+		if (result.codeRetour == -2)
+			openError(context.getString(R.string.erreur), result.response);
+		else if (result.codeRetour == 403 && result.type != Global.T_INSCRIPTION_INSCRIPTIONS && result.type != Global.T_INSCRIPTION_SUSIE)
 			openError("Error network", context.getString(R.string.erreur_auth));
 		else if (result.codeRetour == -1)
 			openError("Error network", context.getString(R.string.impossible_acceder_intra));
@@ -128,7 +243,15 @@ public class RecupDonneesNet extends AsyncTask<MyRequest, Integer, MyRequest> {
 		else if (result.codeRetour != 200 && (result.type == Global.T_INSCRIPTION_INSCRIPTIONS || result.type == Global.T_INSCRIPTION_SUSIE))
 		{
 			if (!((Button) result.obj).isEnabled())
+			{
+				try {
+					if (progressDialog != null && progressDialog.isShowing())
+						progressDialog.cancel();
+				} catch (Exception e) {
+					// nothing
+				}
 				return ;
+			}
 			if (((Button) result.obj).getText().equals("Inscription"))
 				((Button) result.obj).setText("Désinscription");
 			else
@@ -161,12 +284,21 @@ public class RecupDonneesNet extends AsyncTask<MyRequest, Integer, MyRequest> {
 				for (i = 0; i < array.length(); i++) {
 					JSONObject o = array.getJSONObject(i);
 					Activite act = null;
-					if (!o.isNull("event_registered") && result.type == Global.T_CAL || !o.isNull("scolaryear") && result.type == Global.T_INSCRIPTIONS && o.getBoolean("allow_register")
-							&& o.getBoolean("module_registered") && (o.isNull("event_registered") || o.getString("event_registered").equals("registered")))
+					//Log.d("rights", o.getString("rights").contains("\"prof_inst\"") ? "true" : "false");
+					if (result.type == Global.T_CAL && !o.isNull("event_registered") ||
+							result.type == Global.T_INSCRIPTIONS && !o.isNull("scolaryear") && !o.isNull("allow_register") && o.getBoolean("allow_register") && o.getBoolean("module_registered") &&
+							(o.isNull("event_registered") && !o.getString("is_rdv").equals("1") || o.getString("event_registered").equals("registered")))
 					{
 						JSONObject r = o.getJSONObject("room");
 						act = new Activite(o.getString("acti_title") + (!o.isNull("title") ? " " + o.getString("title") : ""), o.getString("titlemodule"), o.getString("start"), o.getString("end"),
 								(!r.isNull("code")) ? r.getString("code") : "", o.getString("event_registered"), o.getBoolean("allow_token"), o.getString("rdv_group_registered"), o.getString("codeacti"),
+										o.getString("scolaryear") + "/" + o.getString("codemodule") + "/" + o.getString("codeinstance") + "/" + o.getString("codeacti") + "/" + o.getString("codeevent"));
+					}
+					else if (result.type == Global.T_CAL && !o.isNull("rights") && o.getString("rights").contains("\"prof_inst\""))
+					{
+						JSONObject r = o.getJSONObject("room");
+						act = new Activite(o.getString("acti_title") + (!o.isNull("title") ? " " + o.getString("title") : ""), o.getString("titlemodule"), o.getString("start"), o.getString("end"),
+								(!r.isNull("code")) ? r.getString("code") : "", "", false, "", o.getString("codeacti"),
 										o.getString("scolaryear") + "/" + o.getString("codemodule") + "/" + o.getString("codeinstance") + "/" + o.getString("codeacti") + "/" + o.getString("codeevent"));
 					}
 					else if (!o.isNull("calendar_type") && !o.isNull("subscribed") && o.getBoolean("subscribed") && result.type != Global.T_INSCRIPTIONS)
@@ -207,7 +339,7 @@ public class RecupDonneesNet extends AsyncTask<MyRequest, Integer, MyRequest> {
 				for (int i = 0; i < array.length(); i++) {
 					JSONObject o = array.getJSONObject(i);
 					if (!o.isNull("title"))
-						Stock.getInstance().messagesAddElem(new Message(o.getString("title"), o.getString("content"), o.getString("date")));
+						Stock.getInstance().messagesAddElem(new Notice(o.getString("title"), o.getString("content"), o.getString("date")));
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -227,8 +359,8 @@ public class RecupDonneesNet extends AsyncTask<MyRequest, Integer, MyRequest> {
 					openError("Error token", "Va voir l'adm maintenant...");
 				} else
 				{
-					if (!((Button) result.obj).isEnabled())
-						return ;
+					/*if (!((Button) result.obj).isEnabled())
+						return ;*/
 					((AlertDialog) result.obj).setMessage(Html.fromHtml("<font color='#FF0000'><b>" + o.getString("error") + "</b></font>"));
 					((AlertDialog) result.obj).show();
 				}
@@ -339,7 +471,12 @@ public class RecupDonneesNet extends AsyncTask<MyRequest, Integer, MyRequest> {
 			Stock.getInstance().susies_req = 1;
 			Stock.getInstance().susiesAdapter().notifyDataSetChanged();
 		}
-		if (progressDialog != null && progressDialog.isShowing())
-			progressDialog.cancel();
+
+		try {
+			if (progressDialog != null && progressDialog.isShowing())
+				progressDialog.cancel();
+		} catch (Exception e) {
+			// nothing
+		}
 	}
 }

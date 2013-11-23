@@ -2,6 +2,7 @@ package net.dewep.intranetepitech;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.app.Activity;
 
 public class Global extends Activity {
@@ -24,7 +25,12 @@ public class Global extends Activity {
 		if (Act_Settings.getLogin(context).equals("") || Act_Settings.getPassword(context).equals(""))
 		{
 			Intent intent = new Intent(context, Act_Settings.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			context.startActivity(intent);
+		}
+		if (Stock.getInstance().httpclient == null)
+		{
+			Global.login(context);
 		}
 	}
 
@@ -32,10 +38,16 @@ public class Global extends Activity {
 	{
 		if (Stock.getInstance().httpclient != null)
 			return ;
-		RecupDonneesNet mnm = new RecupDonneesNet(context, false);
-		MyRequest req = new MyRequest();
-		req.url = "https://intra.epitech.eu";
-		req.type = Global.T_LOGIN;
-		mnm.execute(req);
+		Bundle b = new Bundle();
+		Intent ActSettings = new Intent(context, Act_Settings.class);
+		ActSettings.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		b.putInt("autolog", 1);
+		ActSettings.putExtras(b);
+		context.startActivity(ActSettings);
+	}
+
+	public static String logas()
+	{
+		return "";
 	}
 }

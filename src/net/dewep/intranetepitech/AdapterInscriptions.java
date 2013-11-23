@@ -114,13 +114,13 @@ public class AdapterInscriptions extends BaseAdapter implements OnClickListener
 		{
 			act.registered = "";
 			((Button) v).setText("Inscription");
-			req.url = "https://intra.epitech.eu/module/" + act.url_event + "/unregister?format=json";
+			req.url = "/module/" + act.url_event + "/unregister?format=json";
 		}
 		else
 		{
 			act.registered = "registered";
 			((Button) v).setText("Désinscription");
-			req.url = "https://intra.epitech.eu/module/" + act.url_event + "/register?format=json";
+			req.url = "/module/" + act.url_event + "/register?format=json";
 		}
 		mnm.execute(req);
 	}

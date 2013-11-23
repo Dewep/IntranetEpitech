@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/gris_clair"
     android:orientation="vertical"
     android:padding="20dp" >
 
@@ -37,8 +38,30 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="@string/password"
+        android:layout_marginBottom="20dp"
+        android:hint="@string/facultatif"
         android:inputType="textPassword" />
+
+    <TextView
+        android:id="@+id/logas_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/logas"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/main"
+        android:textIsSelectable="false"
+        android:visibility="invisible" />
+
+    <EditText
+        android:id="@+id/logas"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:ems="10"
+        android:hint="@string/logas"
+        android:visibility="invisible" >
+
+    </EditText>
 
     <TextView
         android:id="@+id/settings_info"
@@ -54,5 +77,17 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
         android:text="@string/enregistrer" />
+
+    <TextView
+        android:id="@+id/dewep"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:text="@string/signature"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/main"
+        android:textIsSelectable="true"
+        android:textSize="12sp" />
 
 </LinearLayout>

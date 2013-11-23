@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.dewep.intranetepitech"
-    android:versionCode="4"
-    android:versionName="1.3" >
+    android:versionCode="5"
+    android:versionName="1.4" >
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="17" />
+        android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -17,51 +17,79 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
+			android:screenOrientation="portrait"
+			android:configChanges="orientation|keyboardHidden"
             android:name="net.dewep.intranetepitech.Act_Main"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name="net.dewep.intranetepitech.Act_Calendrier"
-            android:label="Mon planning" >
-        </activity>
-        <activity
-            android:name="net.dewep.intranetepitech.Act_Messages"
-            android:label="Messages" >
-        </activity>
-        <activity
+			android:screenOrientation="portrait"
+			android:configChanges="orientation|keyboardHidden"
+            android:noHistory="true"
             android:name="net.dewep.intranetepitech.Act_Settings"
             android:label="Préférences" >
         </activity>
         <activity
+			android:screenOrientation="portrait"
+			android:configChanges="orientation|keyboardHidden"
+            android:name="net.dewep.intranetepitech.Act_Calendrier"
+            android:label="Mon planning" >
+        </activity>
+        <activity
+			android:screenOrientation="portrait"
+			android:configChanges="orientation|keyboardHidden"
+            android:name="net.dewep.intranetepitech.Act_Messages"
+            android:label="Messages" >
+        </activity>
+        <activity
+			android:screenOrientation="portrait"
+			android:configChanges="orientation|keyboardHidden"
             android:name="net.dewep.intranetepitech.Act_Mes_Notes"
             android:label="Mes notes" >
         </activity>
         <activity
+			android:screenOrientation="portrait"
+			android:configChanges="orientation|keyboardHidden"
             android:name="net.dewep.intranetepitech.Act_Notes"
             android:label="Notes" >
         </activity>
         <activity
+			android:screenOrientation="portrait"
+			android:configChanges="orientation|keyboardHidden"
             android:name="net.dewep.intranetepitech.Act_A_Propos"
             android:label="A propos" >
         </activity>
         <activity
+			android:screenOrientation="portrait"
+			android:configChanges="orientation|keyboardHidden"
+            android:name="net.dewep.intranetepitech.Act_Netsoul"
+            android:label="Netsoul" >
+        </activity>
+        <activity
+			android:screenOrientation="portrait"
+			android:configChanges="orientation|keyboardHidden"
             android:name="net.dewep.intranetepitech.Act_Mes_Projets"
             android:label="Mes projets" >
         </activity>
         <activity
+			android:screenOrientation="portrait"
+			android:configChanges="orientation|keyboardHidden"
             android:name="net.dewep.intranetepitech.Act_Inscriptions"
             android:label="Planning inscriptions" >
         </activity>
         <activity
+			android:screenOrientation="portrait"
+			android:configChanges="orientation|keyboardHidden"
             android:name="net.dewep.intranetepitech.Act_Susies"
             android:label="Susies" >
         </activity>
         <activity
+			android:screenOrientation="portrait"
+			android:configChanges="orientation|keyboardHidden"
             android:name="net.dewep.intranetepitech.Act_Susie"
             android:label="Susie" >
         </activity>

@@ -146,7 +146,7 @@ public class AdapterCalendrier extends BaseAdapter implements OnClickListener
 								dialog.dismiss();
 								RecupDonneesNet mnm = new RecupDonneesNet(context_class, true);
 								MyRequest req = new MyRequest();
-								req.url = "https://intra.epitech.eu/module/" + act.url_event + "/token?format=json";
+								req.url = "/module/" + act.url_event + "/token?format=json";
 								req.type = Global.T_TOKENS;
 								req.obj = dialog;
 								req.nameValuePairs.add(new BasicNameValuePair("token", input.getText().toString()));

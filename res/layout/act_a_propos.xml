@@ -56,24 +56,10 @@
         android:textColor="@color/main" />
 
     <TextView
+        android:id="@+id/dewep"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/auteur_content" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="25dp"
-        android:text="@string/contact"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/main" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/contact_content" />
 
     <Button
         android:id="@+id/email"

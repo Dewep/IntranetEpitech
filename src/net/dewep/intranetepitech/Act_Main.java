@@ -23,7 +23,6 @@ public class Act_Main extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.act_main);
 		Global.startup(this);
-		Global.login(this);
 
 		maListViewPerso = (ListView) findViewById(R.id.listviewmenu);
 		ArrayList<HashMap<String, String>> listItem = new ArrayList<HashMap<String, String>>();
@@ -64,14 +63,19 @@ public class Act_Main extends Activity {
 		map.put("img", String.valueOf(R.drawable.ic_menu_mes_projets));
 		listItem.add(map);
 
-		map = new HashMap<String, String>();
+		/*map = new HashMap<String, String>();
 		map.put("titre", getResources().getString(R.string.m_preferences));
 		map.put("img", String.valueOf(R.drawable.ic_menu_settings));
+		listItem.add(map);*/
+
+		map = new HashMap<String, String>();
+		map.put("titre", getResources().getString(R.string.m_netsoul));
+		map.put("img", String.valueOf(R.drawable.ic_menu_netsoul));
 		listItem.add(map);
 
 		map = new HashMap<String, String>();
 		map.put("titre", getResources().getString(R.string.m_apropos));
-		map.put("img", String.valueOf(R.drawable.ic_menu_netsoul));
+		map.put("img", String.valueOf(R.drawable.ic_menu_a_propos));
 		listItem.add(map);
 
 		SimpleAdapter mSchedule = new SimpleAdapter (this.getBaseContext(), listItem, R.layout.item_main_menu,
@@ -102,13 +106,18 @@ public class Act_Main extends Activity {
 				else if (map.get("titre").equals(getResources().getString(R.string.m_notes)))
 				{
 					Intent intent = new Intent(Act_Main.this, Act_Mes_Notes.class);
-					b.putString("login", Act_Settings.getLogin(Act_Main.this));
+					b.putString("login", Act_Settings.getLoginActu(Act_Main.this));
 					intent.putExtras(b);
 					startActivity(intent);
 				}
 				else if (map.get("titre").equals(getResources().getString(R.string.m_preferences)))
 				{
 					Intent intent = new Intent(Act_Main.this, Act_Settings.class);
+					startActivity(intent);
+				}
+				else if (map.get("titre").equals(getResources().getString(R.string.m_netsoul)))
+				{
+					Intent intent = new Intent(Act_Main.this, Act_Netsoul.class);
 					startActivity(intent);
 				}
 				else if (map.get("titre").equals(getResources().getString(R.string.m_apropos)))

@@ -28,7 +28,7 @@ public class Act_Mes_Notes extends Activity implements OnClickListener {
 		Global.startup(this);
 
 		Bundle b = getIntent().getExtras();
-		this.login = (b.getString("login").equals("")) ? Act_Settings.getLogin(this) : b.getString("login");
+		this.login = (b.getString("login").equals("")) ? Act_Settings.getLoginActu(this) : b.getString("login");
 
 		ListView lw = (ListView) findViewById(R.id.listviewnotes);
 		Stock.getInstance().notesInit(this, 1);
@@ -39,7 +39,7 @@ public class Act_Mes_Notes extends Activity implements OnClickListener {
 		Button search = (Button) findViewById(R.id.search);
 		search.setOnClickListener(this);
 		EditText edittext = (EditText) findViewById(R.id.login);
-		if (!this.login.equals(Act_Settings.getLogin(this)))
+		if (!this.login.equals(Act_Settings.getLoginActu(this)))
 			edittext.setText(this.login);
 		edittext.requestFocus();
 		this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -51,7 +51,7 @@ public class Act_Mes_Notes extends Activity implements OnClickListener {
 
 		RecupDonneesNet mnm = new RecupDonneesNet(this, true);
 		MyRequest req = new MyRequest();
-		req.url = "https://intra.epitech.eu/user/" + this.login + "/notes/?format=json";
+		req.url = "/user/" + this.login + "/notes/?format=json";
 		req.type = Global.T_MES_NOTES;
 		mnm.execute(req);
 	}
@@ -70,6 +70,7 @@ public class Act_Mes_Notes extends Activity implements OnClickListener {
 		case android.R.id.home:
 		case R.id.menu_home:
 			Intent parentActivityIntent = new Intent(this, Act_Main.class);
+			parentActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(parentActivityIntent);
 			return true;
 		case R.id.menu_refresh:

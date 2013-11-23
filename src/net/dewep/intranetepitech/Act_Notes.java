@@ -43,7 +43,7 @@ public class Act_Notes extends Activity {
 
 		RecupDonneesNet mnm = new RecupDonneesNet(this, true);
 		MyRequest req = new MyRequest();
-		req.url = "https://intra.epitech.eu/module/" + this.url_module + "/note/?format=json";
+		req.url = "/module/" + this.url_module + "/note/?format=json";
 		req.type = Global.T_NOTES;
 		mnm.execute(req);
 	}
@@ -63,8 +63,9 @@ public class Act_Notes extends Activity {
 		case R.id.menu_home:
 			Intent parentActivityIntent = new Intent(this, Act_Mes_Notes.class);
 			Bundle b = new Bundle();
-			b.putString("login", Act_Settings.getLogin(this));
+			b.putString("login", Act_Settings.getLoginActu(this));
 			parentActivityIntent.putExtras(b);
+			parentActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(parentActivityIntent);
 			return true;
 		case R.id.menu_refresh:

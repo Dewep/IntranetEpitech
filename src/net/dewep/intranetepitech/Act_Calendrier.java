@@ -52,7 +52,7 @@ public class Act_Calendrier extends Activity implements OnClickListener {
 
 		RecupDonneesNet mnm = new RecupDonneesNet(this, true);
 		MyRequest req = new MyRequest();
-		req.url = "https://intra.epitech.eu/planning/load?format=json&" + ManipulateDate.start_end(this.move, this.days);
+		req.url = "/planning/load?format=json&" + ManipulateDate.start_end(this.move, this.days);
 		req.type = Global.T_CAL;
 		mnm.execute(req);		
 	}
@@ -95,6 +95,7 @@ public class Act_Calendrier extends Activity implements OnClickListener {
 		case android.R.id.home:
 		case R.id.menu_home:
 			Intent parentActivityIntent = new Intent(this, Act_Main.class);
+			parentActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(parentActivityIntent);
 			return true;
 		case R.id.menu_refresh:

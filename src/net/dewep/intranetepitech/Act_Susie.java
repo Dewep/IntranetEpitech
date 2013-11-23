@@ -38,8 +38,9 @@ public class Act_Susie extends Activity {
 
 		RecupDonneesNet mnm = new RecupDonneesNet(this, true);
 		MyRequest req = new MyRequest();
-		req.url = "https://intra.epitech.eu/planning/1/" + this.id + "/?format=json";
+		req.url = this.id + "/?format=json";
 		req.type = Global.T_SUSIE;
+		req.susie = true;
 		mnm.execute(req);
 	}
 
@@ -61,6 +62,7 @@ public class Act_Susie extends Activity {
 			b.putInt("move", 0);
 			b.putInt("days", 7);
 			parentActivityIntent.putExtras(b);
+			parentActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(parentActivityIntent);
 			return true;
 		case R.id.menu_refresh:

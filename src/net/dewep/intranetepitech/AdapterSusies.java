@@ -152,14 +152,15 @@ public class AdapterSusies extends BaseAdapter implements OnClickListener
 		{
 			susie.subscribed = true;
 			((Button) v).setText("Désinscription");
-			req.url = "https://intra.epitech.eu/planning/1/" + susie.id + "/subscribe?format=json";
+			req.url = susie.id + "/subscribe?format=json";
 		}
 		else
 		{
 			susie.subscribed = false;
 			((Button) v).setText("Inscription");
-			req.url = "https://intra.epitech.eu/planning/1/" + susie.id + "/unsubscribe?format=json";
+			req.url = susie.id + "/unsubscribe?format=json";
 		}
+		req.susie = true;
 		mnm.execute(req);
 	}
 }

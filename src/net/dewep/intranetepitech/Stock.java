@@ -11,7 +11,7 @@ public class Stock {
 	ArrayList<InfosCalendrier> cal;
 	ArrayList<Note> notes;
 	ArrayList<Projet> projets;
-	ArrayList<Message> messages;
+	ArrayList<Notice> messages;
 	ArrayList<Susie> susies;
 	AdapterCalendrier calAdapter = null;
 	AdapterNotes notesAdapter = null;
@@ -24,6 +24,7 @@ public class Stock {
 	int notes_req = 0;
 	int projets_req = 0;
 	int messages_req = 0;
+	int id_susie = 0;
 	HttpClient httpclient = null;
 
 	public static Stock getInstance() {
@@ -153,10 +154,10 @@ public class Stock {
 	public void messagesInit(Context context)
 	{
 		messagesAdapter = new AdapterMessages(context);
-		messages = new ArrayList<Message>();
+		messages = new ArrayList<Notice>();
 	}
 
-	public void messagesAddElem(Message t) {
+	public void messagesAddElem(Notice t) {
 		if (messages == null)
 			return ;
 		messages.add(t);
