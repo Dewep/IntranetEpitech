@@ -48,7 +48,7 @@ public final class R {
     public static final class id {
         public static final int accueil=0x7f090007;
         public static final int act_susie=0x7f090016;
-        public static final int action_settings=0x7f090032;
+        public static final int action_settings=0x7f090033;
         public static final int activite_infos=0x7f090021;
         public static final int activite_titre=0x7f090020;
         public static final int button=0x7f09000d;
@@ -77,7 +77,8 @@ public final class R {
         public static final int login=0x7f09000a;
         public static final int maker=0x7f09001a;
         public static final int menu_home=0x7f090031;
-        public static final int menu_refresh=0x7f090030;
+        public static final int menu_netsoul=0x7f090030;
+        public static final int menu_refresh=0x7f090032;
         public static final int note_comment=0x7f090028;
         public static final int note_date=0x7f090027;
         public static final int note_mark=0x7f090026;
@@ -119,9 +120,11 @@ public final class R {
         public static final int item_susies_susie=0x7f030011;
     }
     public static final class menu {
-        public static final int home_refresh=0x7f080000;
-        public static final int main=0x7f080001;
-        public static final int refresh=0x7f080002;
+        public static final int home_netsoul=0x7f080000;
+        public static final int home_refresh=0x7f080001;
+        public static final int main=0x7f080002;
+        public static final int netsoul=0x7f080003;
+        public static final int refresh=0x7f080004;
     }
     public static final class string {
         public static final int action_settings=0x7f050002;

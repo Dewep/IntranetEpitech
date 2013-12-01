@@ -24,7 +24,7 @@ public class Act_Netsoul extends Activity implements OnClickListener {
 		if (android.os.Build.VERSION.SDK_INT >= 11)
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.act_netsoul);
-		Global.startup(this);
+		//Global.startup(this);
 
 		SharedPreferences pref = getSharedPreferences("user", MODE_PRIVATE);
 		EditText login = (EditText) findViewById(R.id.login);
@@ -62,6 +62,7 @@ public class Act_Netsoul extends Activity implements OnClickListener {
 	    }
 	};
 
+	@SuppressLint("DefaultLocale")
 	@Override
 	public void onClick(View v) {
 		if (((Button) v).getText().equals("Connexion"))
@@ -70,10 +71,10 @@ public class Act_Netsoul extends Activity implements OnClickListener {
 			SharedPreferences.Editor editor = pref.edit();
 			EditText login = (EditText) findViewById(R.id.login);
 			EditText password = (EditText) findViewById(R.id.password);
-			editor.putString("login_netsoul", login.getText().toString());
+			editor.putString("login_netsoul", login.getText().toString().trim().toLowerCase());
 			editor.putString("password_netsoul", password.getText().toString());
 			editor.commit();
-			netsoul.start(login.getText().toString(), password.getText().toString());
+			netsoul.start(login.getText().toString().trim().toLowerCase(), password.getText().toString());
 		}
 		else
 		{

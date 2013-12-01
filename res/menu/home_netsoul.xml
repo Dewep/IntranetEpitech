@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+	<item
+        android:id="@+id/menu_netsoul"
+        android:icon="@drawable/ic_menu_netsoul"
+        android:showAsAction="ifRoom"
+        android:title="@string/m_netsoul"/>
+
+	<item
+        android:id="@+id/menu_home"
+        android:icon="@drawable/ic_menu_home"
+        android:showAsAction="ifRoom"
+        android:title="@string/home"/>
+
+</menu>

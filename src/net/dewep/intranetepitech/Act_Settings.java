@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,6 +21,9 @@ public class Act_Settings extends Activity implements OnClickListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		if (android.os.Build.VERSION.SDK_INT >= 11)
+			getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		Bundle b = getIntent().getExtras();
 		int autolog = (b != null) ? b.getInt("autolog", 0) : 0;
@@ -69,6 +73,7 @@ public class Act_Settings extends Activity implements OnClickListener {
 		Global.login(this);
 	}
 
+	@SuppressLint("DefaultLocale")
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.dewep)
@@ -82,7 +87,9 @@ public class Act_Settings extends Activity implements OnClickListener {
 			EditText login = (EditText) findViewById(R.id.login);
 			EditText password = (EditText) findViewById(R.id.password);
 			EditText logas = (EditText) findViewById(R.id.logas);
-			if (login.getText().length() < 1)
+			String s_login = login.getText().toString().trim().toLowerCase();
+			String s_logas = logas.getText().toString().trim().toLowerCase();
+			if (s_login.length() < 1)
 			{
 				info.setText(getResources().getString(R.string.login_trop_court));
 			}
@@ -94,10 +101,10 @@ public class Act_Settings extends Activity implements OnClickListener {
 			{
 				SharedPreferences pref = getSharedPreferences("user", MODE_PRIVATE);
 				SharedPreferences.Editor editor = pref.edit();
-				editor.putString("login", login.getText().toString());
+				editor.putString("login", s_login);
 				editor.putString("password", password.getText().toString());
 				if (pref.getBoolean("canLogas", false))
-					editor.putString("logas", logas.getText().toString());
+					editor.putString("logas", s_logas);
 				editor.commit();
 				info.setText(getResources().getString(R.string.identifiants_save));
 				Stock.getInstance().httpclient = null;
@@ -165,7 +172,21 @@ public class Act_Settings extends Activity implements OnClickListener {
 			parentActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(parentActivityIntent);
 			return true;
+		case R.id.menu_netsoul:
+			Intent parentActivityIntent2 = new Intent(this, Act_Netsoul.class);
+			parentActivityIntent2.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(parentActivityIntent2);
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		if (android.os.Build.VERSION.SDK_INT >= 11)
+			getMenuInflater().inflate(R.menu.netsoul, menu);
+		else
+			getMenuInflater().inflate(R.menu.home_netsoul, menu);
+		return true;
 	}
 }

@@ -285,14 +285,17 @@ public class RecupDonneesNet extends AsyncTask<MyRequest, Integer, MyRequest> {
 					JSONObject o = array.getJSONObject(i);
 					Activite act = null;
 					//Log.d("rights", o.getString("rights").contains("\"prof_inst\"") ? "true" : "false");
-					if (result.type == Global.T_CAL && !o.isNull("event_registered") ||
+					//Log.d("Event", o.getString("acti_title") + (!o.isNull("title") ? " " + o.getString("title") : ""));
+					if (result.type == Global.T_CAL && (!o.isNull("event_registered") || ((!o.isNull("is_rdv") && o.getString("is_rdv").equals("1")) && (!o.isNull("rdv_group_registered") || !o.isNull("rdv_indiv_registered")))) ||
 							result.type == Global.T_INSCRIPTIONS && !o.isNull("scolaryear") && !o.isNull("allow_register") && o.getBoolean("allow_register") && o.getBoolean("module_registered") &&
-							(o.isNull("event_registered") && !o.getString("is_rdv").equals("1") || o.getString("event_registered").equals("registered")))
+							(o.isNull("event_registered") && (o.isNull("is_rdv") || !o.getString("is_rdv").equals("1")) || o.getString("event_registered").equals("registered")))
 					{
+						//Log.d("Event add", "yes !");
 						JSONObject r = o.getJSONObject("room");
 						act = new Activite(o.getString("acti_title") + (!o.isNull("title") ? " " + o.getString("title") : ""), o.getString("titlemodule"), o.getString("start"), o.getString("end"),
-								(!r.isNull("code")) ? r.getString("code") : "", o.getString("event_registered"), o.getBoolean("allow_token"), o.getString("rdv_group_registered"), o.getString("codeacti"),
-										o.getString("scolaryear") + "/" + o.getString("codemodule") + "/" + o.getString("codeinstance") + "/" + o.getString("codeacti") + "/" + o.getString("codeevent"));
+								(!r.isNull("code")) ? r.getString("code") : "", o.getString("event_registered"), (o.isNull("is_rdv") || !o.getString("is_rdv").equals("1")) ? o.getBoolean("allow_token") : false,
+										(!o.isNull("rdv_group_registered") ? o.getString("rdv_group_registered") : (!o.isNull("rdv_indiv_registered") ? o.getString("rdv_indiv_registered") : "")),
+										o.getString("codeacti"), o.getString("scolaryear") + "/" + o.getString("codemodule") + "/" + o.getString("codeinstance") + "/" + o.getString("codeacti") + "/" + o.getString("codeevent"));
 					}
 					else if (result.type == Global.T_CAL && !o.isNull("rights") && o.getString("rights").contains("\"prof_inst\""))
 					{

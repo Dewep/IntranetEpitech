@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.dewep.intranetepitech"
-    android:versionCode="5"
-    android:versionName="1.4" >
+    android:versionCode="6"
+    android:versionName="1.4.1" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -17,8 +17,6 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-			android:screenOrientation="portrait"
-			android:configChanges="orientation|keyboardHidden"
             android:name="net.dewep.intranetepitech.Act_Main"
             android:label="@string/app_name" >
             <intent-filter>
@@ -58,8 +56,6 @@
             android:label="Notes" >
         </activity>
         <activity
-			android:screenOrientation="portrait"
-			android:configChanges="orientation|keyboardHidden"
             android:name="net.dewep.intranetepitech.Act_A_Propos"
             android:label="A propos" >
         </activity>
