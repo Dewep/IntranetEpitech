@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -82,6 +83,12 @@ public class Act_Netsoul extends Activity implements OnClickListener {
 		}
 	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
@@ -89,6 +96,10 @@ public class Act_Netsoul extends Activity implements OnClickListener {
 			Intent parentActivityIntent = new Intent(this, Act_Main.class);
 			parentActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(parentActivityIntent);
+			return true;
+		case R.id.action_settings:
+			Intent parentActivityIntent2 = new Intent(this, Act_Settings.class);
+			startActivity(parentActivityIntent2);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

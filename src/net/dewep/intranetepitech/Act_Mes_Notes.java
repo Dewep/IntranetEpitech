@@ -18,7 +18,7 @@ import android.widget.ListView;
 public class Act_Mes_Notes extends Activity implements OnClickListener {
 	String login = "";
 
-	@SuppressLint("NewApi")
+	@SuppressLint({ "NewApi", "DefaultLocale" })
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -29,6 +29,7 @@ public class Act_Mes_Notes extends Activity implements OnClickListener {
 
 		Bundle b = getIntent().getExtras();
 		this.login = (b.getString("login").equals("")) ? Act_Settings.getLoginActu(this) : b.getString("login");
+		this.login = this.login.trim().toLowerCase();
 
 		ListView lw = (ListView) findViewById(R.id.listviewnotes);
 		Stock.getInstance().notesInit(this, 1);

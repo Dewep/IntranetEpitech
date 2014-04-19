@@ -28,6 +28,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
 import android.text.Html;
+import android.util.Log;
 import android.widget.Toast;
 import android.widget.Button;
 
@@ -177,6 +178,7 @@ public class RecupDonneesNet extends AsyncTask<MyRequest, Integer, MyRequest> {
 					return (request);
 				}
 				request.url = "/planning/" + Integer.toString(Stock.getInstance().id_susie) + "/" + request.url;
+				Log.d("REQ URL", request.url);
 			}
 
 			if ((resp = this.post(request.url, request.nameValuePairs, true)) == null)
@@ -208,12 +210,17 @@ public class RecupDonneesNet extends AsyncTask<MyRequest, Integer, MyRequest> {
 	{
 		if (((Activity) this.context).isFinishing())
 			return ;
-		Stock.getInstance().httpclient = null;
 		AlertDialog.Builder builder = new AlertDialog.Builder(this.context);
 		builder.setTitle(title);
 		builder.setMessage(message);
 		AlertDialog dialog = builder.create();
 		dialog.show();		
+	}
+	protected void openError(String title, String message, Boolean reset)
+	{
+		if (reset)
+			Stock.getInstance().httpclient = null;
+		openError(title, message);
 	}
 
 	@Override
@@ -233,33 +240,55 @@ public class RecupDonneesNet extends AsyncTask<MyRequest, Integer, MyRequest> {
 			return ;
 		}
 		if (result.codeRetour == -2)
-			openError(context.getString(R.string.erreur), result.response);
-		else if (result.codeRetour == 403 && result.type != Global.T_INSCRIPTION_INSCRIPTIONS && result.type != Global.T_INSCRIPTION_SUSIE)
-			openError("Error network", context.getString(R.string.erreur_auth));
+			openError(context.getString(R.string.erreur), result.response, true);
+		else if (result.codeRetour == 403)
+			openError("Error network", context.getString(R.string.erreur_auth), true);
 		else if (result.codeRetour == -1)
-			openError("Error network", context.getString(R.string.impossible_acceder_intra));
-		else if (result.codeRetour != 200 && result.type != Global.T_INSCRIPTION_INSCRIPTIONS && result.type != Global.T_INSCRIPTION_SUSIE)
-			openError("Error network", context.getString(R.string.http_code_erreur) + " #" + Integer.toString(result.codeRetour) + ".");
-		else if (result.codeRetour != 200 && (result.type == Global.T_INSCRIPTION_INSCRIPTIONS || result.type == Global.T_INSCRIPTION_SUSIE))
+			openError("Error network", context.getString(R.string.impossible_acceder_intra), true);
+		else if (result.codeRetour != 200 && result.type != Global.T_TOKENS)
 		{
-			if (!((Button) result.obj).isEnabled())
+			if (result.obj != null && (result.type == Global.T_INSCRIPTION_INSCRIPTIONS || result.type == Global.T_INSCRIPTION_SUSIE))
 			{
-				try {
-					if (progressDialog != null && progressDialog.isShowing())
-						progressDialog.cancel();
-				} catch (Exception e) {
-					// nothing
+				if (!((Button) result.obj).isEnabled())
+				{
+					try {
+						if (progressDialog != null && progressDialog.isShowing())
+							progressDialog.cancel();
+					} catch (Exception e) {
+						// nothing
+					}
+					return ;
 				}
-				return ;
+				if (((Button) result.obj).getText().equals("Inscription"))
+					((Button) result.obj).setText("Désinscription");
+				else
+					((Button) result.obj).setText("Inscription");
 			}
-			if (((Button) result.obj).getText().equals("Inscription"))
-				((Button) result.obj).setText("Désinscription");
-			else
-				((Button) result.obj).setText("Inscription");
-			if (result.response != null && (result.response.contains("24") || result.response.contains("pass")))
-				openError("Action impossible", "Trop tard...");
-			else
-				openError("Action impossible", "Vous êtes déjà inscrit sur un autre créneau.");
+			try {
+				JSONObject o = new JSONObject(result.response);
+				if (o.isNull("error"))
+				{
+					openError("Action impossible", "Erreur inconnue.");
+				} else
+				{
+					openError("Action impossible", o.getString("error"));
+				}
+			} catch (JSONException _) {
+				try {
+					JSONArray array = new JSONArray(result.response);
+					JSONObject o = array.getJSONObject(0);
+					if (o.isNull("error"))
+					{
+						openError("Action impossible", "Erreur inconnue.");
+					} else
+					{
+						openError("Action impossible", o.getString("error"));
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+					openError(context.getString(R.string.erreur_parsing), context.getString(R.string.erreur_parsing));
+				}
+			}
 		}
 		else if (result.type == Global.T_PROJETS)
 		{
@@ -290,12 +319,20 @@ public class RecupDonneesNet extends AsyncTask<MyRequest, Integer, MyRequest> {
 							result.type == Global.T_INSCRIPTIONS && !o.isNull("scolaryear") && !o.isNull("allow_register") && o.getBoolean("allow_register") && o.getBoolean("module_registered") &&
 							(o.isNull("event_registered") && (o.isNull("is_rdv") || !o.getString("is_rdv").equals("1")) || o.getString("event_registered").equals("registered")))
 					{
-						//Log.d("Event add", "yes !");
-						JSONObject r = o.getJSONObject("room");
-						act = new Activite(o.getString("acti_title") + (!o.isNull("title") ? " " + o.getString("title") : ""), o.getString("titlemodule"), o.getString("start"), o.getString("end"),
-								(!r.isNull("code")) ? r.getString("code") : "", o.getString("event_registered"), (o.isNull("is_rdv") || !o.getString("is_rdv").equals("1")) ? o.getBoolean("allow_token") : false,
-										(!o.isNull("rdv_group_registered") ? o.getString("rdv_group_registered") : (!o.isNull("rdv_indiv_registered") ? o.getString("rdv_indiv_registered") : "")),
-										o.getString("codeacti"), o.getString("scolaryear") + "/" + o.getString("codemodule") + "/" + o.getString("codeinstance") + "/" + o.getString("codeacti") + "/" + o.getString("codeevent"));
+						//Log.d("Event add", o.isNull("acti_title") ? o.getString("title") : o.getString("acti_title"));
+						String title = (!o.isNull("acti_title") ? o.getString("acti_title") : "") + (!o.isNull("title") ? " " + o.getString("title") : "");
+						String module = (!o.isNull("titlemodule") ? o.getString("titlemodule") : "");
+						String start = (!o.isNull("start") ? o.getString("start") : "");
+						String end = (!o.isNull("end") ? o.getString("end") : "");
+						JSONObject r = o.isNull("room") ? null : o.getJSONObject("room");
+						String room = (r != null && !r.isNull("code")) ? r.getString("code") : "";
+						String event_registered = (!o.isNull("event_registered") ? o.getString("event_registered") : "");
+						Boolean allow_token = (o.isNull("is_rdv") || !o.getString("is_rdv").equals("1")) ? (!o.isNull("allow_token") ? o.getBoolean("allow_token") : false) : false;
+						String rdv_indiv_registered = (!o.isNull("rdv_group_registered") ? o.getString("rdv_group_registered") : (!o.isNull("rdv_indiv_registered") ? o.getString("rdv_indiv_registered") : ""));
+						String codeacti = (!o.isNull("codeacti") ? o.getString("codeacti") : "");
+						String url = (!o.isNull("scolaryear") ? o.getString("scolaryear") : "") + "/" + (!o.isNull("codemodule") ? o.getString("codemodule") : "") + "/" + (!o.isNull("codeinstance") ? o.getString("codeinstance") : "")
+								+ "/" + (!o.isNull("codeacti") ? o.getString("codeacti") : "") + "/" + (!o.isNull("codeevent") ? o.getString("codeevent") : "");
+						act = new Activite(title, module, start, end, room, event_registered, allow_token, rdv_indiv_registered, codeacti, url);
 					}
 					else if (result.type == Global.T_CAL && !o.isNull("rights") && o.getString("rights").contains("\"prof_inst\""))
 					{
@@ -337,8 +374,7 @@ public class RecupDonneesNet extends AsyncTask<MyRequest, Integer, MyRequest> {
 		else if (result.type == Global.T_MESSAGES)
 		{
 			try {
-				JSONObject objs = new JSONObject(result.response);
-				JSONArray array = objs.getJSONArray("msgs");
+				JSONArray array = new JSONArray(result.response);
 				for (int i = 0; i < array.length(); i++) {
 					JSONObject o = array.getJSONObject(i);
 					if (!o.isNull("title"))
@@ -408,13 +444,14 @@ public class RecupDonneesNet extends AsyncTask<MyRequest, Integer, MyRequest> {
 		else if (result.type == Global.T_SUSIES)
 		{
 			try {
-				JSONObject objs = new JSONObject(result.response);
-				JSONArray array = objs.getJSONArray("activities");
+				JSONArray array = new JSONArray(result.response);
 				for (int i = 0; i < array.length(); i++) {
 					JSONObject o = array.getJSONObject(i);
-					JSONObject m = o.getJSONObject("maker");
-					Stock.getInstance().susiesAddElem(new Susie(o.getString("id"), o.getString("type"), o.getString("title"), o.getBoolean("subscribed"), o.getInt("registered"),
+					if (!o.isNull("maker")){
+						JSONObject m = o.getJSONObject("maker");
+						Stock.getInstance().susiesAddElem(new Susie(o.getString("id"), o.getString("type"), o.getString("title"), o.isNull("event_registered") || !o.getString("event_registered").equals("registered") ? false : true, o.getInt("registered"),
 							o.getInt("nb_place"), o.getString("start"), o.getString("end"), m.getString("login"), m.getString("title"), o.getString("description"), null));
+					}
 				}
 				Collections.sort(Stock.getInstance().susies, new ComparatorSusies());
 			} catch (JSONException e) {

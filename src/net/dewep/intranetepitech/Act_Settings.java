@@ -50,6 +50,8 @@ public class Act_Settings extends Activity implements OnClickListener {
 		}
 		Button butt = (Button) findViewById(R.id.save_settings);
 		butt.setOnClickListener(this);
+		Button butt2 = (Button) findViewById(R.id.go_netsoul);
+		butt2.setOnClickListener(this);
 		TextView t1 = (TextView) findViewById(R.id.dewep);
 		t1.setOnClickListener(this);
 	}
@@ -81,7 +83,12 @@ public class Act_Settings extends Activity implements OnClickListener {
 			Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.dewep.net"));
 			startActivity(intent);
 		}
-		else
+		else if (v.getId() == R.id.go_netsoul)
+		{
+			Intent intent = new Intent(this, Act_Netsoul.class);
+			startActivity(intent);
+		}
+		else if (v.getId() == R.id.save_settings)
 		{
 			TextView info = (TextView) findViewById(R.id.settings_info);
 			EditText login = (EditText) findViewById(R.id.login);

@@ -37,8 +37,8 @@
         android:id="@+id/password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
         android:layout_marginBottom="20dp"
+        android:ems="10"
         android:hint="@string/facultatif"
         android:inputType="textPassword" />
 
@@ -60,7 +60,6 @@
         android:ems="10"
         android:hint="@string/logas"
         android:visibility="invisible" >
-
     </EditText>
 
     <TextView
@@ -70,13 +69,25 @@
         android:layout_marginTop="40dp"
         android:textIsSelectable="false" />
 
-    <Button
-        android:id="@+id/save_settings"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
-        android:text="@string/enregistrer" />
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/save_settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/enregistrer" />
+
+        <Button
+            android:id="@+id/go_netsoul"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/m_netsoul" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/dewep"
