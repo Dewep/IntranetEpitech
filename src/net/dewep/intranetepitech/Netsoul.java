@@ -154,9 +154,10 @@ public class Netsoul implements Runnable {
 			return ;
 		connectSocket();
 		
-		String line;
+		String line = "";
 		try {
-			line = is.readLine();
+			if (is != null)
+				line = is.readLine();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

@@ -1,5 +1,6 @@
 package net.dewep.intranetepitech;
 
+import java.net.CookieManager;
 import java.util.ArrayList;
 
 import org.apache.http.client.HttpClient;
@@ -26,6 +27,7 @@ public class Stock {
 	int messages_req = 0;
 	int id_susie = 0;
 	HttpClient httpclient = null;
+	CookieManager cookiemanager = null;
 
 	public static Stock getInstance() {
 		if (_instance == null) {
@@ -80,7 +82,7 @@ public class Stock {
 
 	public Object calGetItem(int position) {
 		if (cal == null || cal.size() <= position)
-			return (0);
+			return (null);
 		return cal.get(position);
 	}
 
@@ -111,7 +113,7 @@ public class Stock {
 
 	public Object notesGetItem(int position) {
 		if (notes == null || notes.size() <= position)
-			return (0);
+			return (null);
 		return notes.get(position);
 	}
 
@@ -142,7 +144,7 @@ public class Stock {
 
 	public Object projetsGetItem(int position) {
 		if (projets == null || projets.size() <= position)
-			return (0);
+			return (null);
 		return projets.get(position);
 	}
 
@@ -173,7 +175,7 @@ public class Stock {
 
 	public Object messagesGetItem(int position) {
 		if (messages == null || messages.size() <= position)
-			return (0);
+			return (null);
 		return messages.get(position);
 	}
 
@@ -204,7 +206,7 @@ public class Stock {
 
 	public Object susiesGetItem(int position) {
 		if (susies == null || susies.size() <= position)
-			return (0);
+			return (null);
 		return susies.get(position);
 	}
 }

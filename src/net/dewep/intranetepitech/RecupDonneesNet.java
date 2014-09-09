@@ -2,17 +2,25 @@ package net.dewep.intranetepitech;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.HttpCookie;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.http.HttpResponse;
+import javax.net.ssl.HttpsURLConnection;
+
 import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,9 +31,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
 import android.text.Html;
 import android.util.Log;
@@ -64,62 +69,99 @@ public class RecupDonneesNet extends AsyncTask<MyRequest, Integer, MyRequest> {
 		}
 	}
 
-	protected HttpResponse post(String url, List<NameValuePair> nameValuePairs, boolean withLogas)
+	protected InputStream getInputStream(HttpsURLConnection request) throws IOException {
+		if (request.getResponseCode() == 200)
+			return request.getInputStream();
+		return request.getErrorStream();
+	}
+
+	protected HttpsURLConnection post(String path, List<NameValuePair> nameValuePairs, boolean withLogas)
 	{
 		try {
 			String short_domaine = "intra.epitech.eu";
 			String domaine = "https://" + short_domaine;
-	
-			HttpPost httppost = new HttpPost(domaine + (withLogas ? Act_Settings.getLogas(this.context) : "") + url);
-			//Log.d("LINK", domaine + (withLogas ? Act_Settings.getLogas(this.context) : "") + url);
-	
-			//httppost.setHeader("Authorization", "Basic " + Base64.encodeToString("aurelien.maigret:xxxxxxxx".getBytes(), Base64.NO_WRAP));
-			PackageManager pm = this.context.getPackageManager();
-	      	PackageInfo pi;
-	        pi = pm.getPackageInfo(this.context.getPackageName(), 0);
-			httppost.addHeader("Referer", domaine + "/IntranetEpitech-" + String.valueOf(pi.versionCode) + "/" + pi.versionName);
-			httppost.addHeader("api-key", "Dewep.net");
-	
-			BasicClientCookie cookie = new BasicClientCookie("language", "fr");
-			cookie.setPath("/");
-			cookie.setDomain(short_domaine);
-			((DefaultHttpClient) Stock.getInstance().httpclient).getCookieStore().addCookie(cookie);
-	
-			if (nameValuePairs != null) {
-				//Log.d("PARAM REQ", "PARAMS ENTITY ADD");
-				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+			URL url = new URL(domaine + (withLogas ? Act_Settings.getLogas(this.context) : "") + path);
+			HttpsURLConnection request = (HttpsURLConnection) url.openConnection();
+			request.setRequestMethod("POST");
+			request.setDoInput(true);
+			request.setDoOutput(true);
+
+			List<HttpCookie> list = Stock.getInstance().cookiemanager.getCookieStore().get(new URI(domaine));
+			for (HttpCookie httpCookie : list) {
+				Log.d("cookie", httpCookie.getName());
 			}
 
-			//Log.d("REQ EXECUTE", "wef");
-			return Stock.getInstance().httpclient.execute(httppost);
+			if (nameValuePairs != null) {
+				UrlEncodedFormEntity entity = new UrlEncodedFormEntity(nameValuePairs);
+				OutputStream post = request.getOutputStream();
+				 entity.writeTo(post);
+				 post.flush();
+			}
+
+			request.connect();
+			return request;
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (NameNotFoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public HttpClient getNewHttpClient() {
+		Stock.getInstance().cookiemanager = new CookieManager();
+		HttpCookie cookie = new HttpCookie("language", "fr");
+		cookie.setPath("/");
+		cookie.setDomain("https://intra.epitech.eu");
+		try {
+			Stock.getInstance().cookiemanager.getCookieStore().add(new URI("https://intra.epitech.eu"), cookie);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		CookieHandler.setDefault(Stock.getInstance().cookiemanager);
+		return new DefaultHttpClient();
+	    /*try {
+	        KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+	        trustStore.load(null, null);
+
+	        SSLSocketFactory sf = new MySSLSocketFactory(trustStore);
+	        sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+
+	        HttpParams params = new BasicHttpParams();
+	        HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+	        HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
+
+	        SchemeRegistry registry = new SchemeRegistry();
+	        registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+	        registry.register(new Scheme("https", sf, 443));
+
+	        ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, registry);
+
+	        return new DefaultHttpClient(ccm, params);
+	    } catch (Exception e) {
+	        return new DefaultHttpClient();
+	    }*/
 	}
 
 	@Override
 	protected MyRequest doInBackground(MyRequest... params) {
 		MyRequest request = (MyRequest) params[0];
 		try {
-			HttpResponse resp = null;
+			HttpsURLConnection resp = null;
 			if (Stock.getInstance().httpclient == null)
 			{
-				//Log.d("INIT CONNEXION", "");
-				Stock.getInstance().httpclient = new DefaultHttpClient();
+				Stock.getInstance().httpclient = getNewHttpClient();
 				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 				nameValuePairs.add(new BasicNameValuePair("login", Act_Settings.getLogin(this.context)));
 				nameValuePairs.add(new BasicNameValuePair("password", Act_Settings.getPassword(this.context)));
 				if ((resp = this.post("/user/?format=json", nameValuePairs, false)) == null)
 					throw new IOException("this.post is null");
-				BufferedReader reader = new BufferedReader(new InputStreamReader(resp.getEntity().getContent(), "UTF-8"));
+				BufferedReader reader = new BufferedReader(new InputStreamReader(getInputStream(resp), "UTF-8"));
 				StringBuilder builder = new StringBuilder();
 				for (String line = null; (line = reader.readLine()) != null;)
 					builder.append(line).append("\n");
 				request.response = builder.toString();
-				//Log.d("REQ END", request.response);
 				JSONObject objs = new JSONObject(request.response);
 				Act_Settings.setCanLogas(this.context, false);
 				if (objs.has("rights"))
@@ -127,8 +169,7 @@ public class RecupDonneesNet extends AsyncTask<MyRequest, Integer, MyRequest> {
 					JSONObject rights = objs.getJSONObject("rights");
 					Act_Settings.setCanLogas(this.context, rights.has("logas"));
 				}
-				request.codeRetour = resp.getStatusLine().getStatusCode();
-				//Log.d("testt", request.response);
+				request.codeRetour = resp.getResponseCode();
 				if (request.codeRetour != 200)
 					return (request);
 			}
@@ -144,16 +185,14 @@ public class RecupDonneesNet extends AsyncTask<MyRequest, Integer, MyRequest> {
 				{
 					if ((resp = this.post("/planning/my-schedules?format=json", null, true)) == null)
 						throw new IOException("this.post is null");
-					BufferedReader reader = new BufferedReader(new InputStreamReader(resp.getEntity().getContent(), "UTF-8"));
+					BufferedReader reader = new BufferedReader(new InputStreamReader(getInputStream(resp), "UTF-8"));
 					StringBuilder builder = new StringBuilder();
 					for (String line = null; (line = reader.readLine()) != null;)
 						builder.append(line).append("\n");
 					request.response = builder.toString();
-					//Log.d("REQ END", request.response);
 					try {
 						if (request.response.indexOf("[") == -1)
 							request.response = "[" + request.response + "]";
-						//Log.d("resp susie", request.response);
 						JSONArray array = new JSONArray(request.response);
 						for (int i = 0; i < array.length(); i++) {
 							JSONObject o = array.getJSONObject(i);
@@ -166,8 +205,7 @@ public class RecupDonneesNet extends AsyncTask<MyRequest, Integer, MyRequest> {
 						request.response = context.getString(R.string.erreur_parsing);
 						return (request);
 					}
-					request.codeRetour = resp.getStatusLine().getStatusCode();
-					//Log.d("testt", request.response);
+					request.codeRetour = resp.getResponseCode();
 					if (request.codeRetour != 200)
 						return (request);
 				}
@@ -183,13 +221,12 @@ public class RecupDonneesNet extends AsyncTask<MyRequest, Integer, MyRequest> {
 
 			if ((resp = this.post(request.url, request.nameValuePairs, true)) == null)
 				throw new IOException("this.post is null");
-			request.codeRetour = resp.getStatusLine().getStatusCode();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(resp.getEntity().getContent(), "UTF-8"));
+			request.codeRetour = resp.getResponseCode();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(getInputStream(resp), "UTF-8"));
 			StringBuilder builder = new StringBuilder();
 			for (String line = null; (line = reader.readLine()) != null;)
 				builder.append(line).append("\n");
 			request.response = builder.toString();
-			//Log.d("test", request.response);
 			if (request.codeRetour != 200)
 				return (request);
 			if (request.response.indexOf("[") == -1)

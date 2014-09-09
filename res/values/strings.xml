@@ -18,7 +18,7 @@
     <string name="voir_fichiers">Voir les fichiers</string>
     <string name="liste_inscrits">Liste des inscrits</string>
     <string name="version">Version</string>
-    <string name="version_content">ID Version : 1.4.2\nDate mise à jour : 19 avril 2014</string>
+    <string name="version_content">ID Version : 1.4.3\nDate mise à jour : 9 septembre 2014</string>
     <string name="opensource">Application OpenSource</string>
     <string name="opensource_content">Ce projet est OpenSource. Vous trouverez les sources de l\'application sur GitHub :</string>
     <string name="github">https://github.com/Dewep/IntranetEpitech</string>
