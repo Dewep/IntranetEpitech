@@ -1,6 +1,8 @@
 Android : Intranet Epitech 1.4.3
 ==============================
 
+Version 2 de l'application : <https://github.com/Dewep/IntranetEpitechV2>.
+
 
 Présentation
 ------------
